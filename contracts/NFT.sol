@@ -13,9 +13,13 @@ contract NFT is ERC721Enumerable, Ownable {
     uint256 public cost;
     uint256 public maxSupply;
     uint256 public allowMintingOn;
+    uint256 public maxMintAmount;
+    bool public mintingPaused;
 
     event Mint(uint256 amount, address minter);
     event Withdraw(uint256 amount, address owner);
+
+    mapping(address => bool) public whitelist;
 
     constructor (
         string memory _name, 
@@ -23,15 +27,28 @@ contract NFT is ERC721Enumerable, Ownable {
         uint256 _cost,
         uint256 _maxSupply,
         uint256 _allowMintingOn,
-        string memory _baseURI
+        string memory _baseURI,
+        uint256 _maxMintAmount
         ) ERC721(_name, _symbol) {
             cost = _cost;
             maxSupply = _maxSupply;
             allowMintingOn = _allowMintingOn;
             baseURI = _baseURI;
-        } 
+            maxMintAmount = _maxMintAmount;
+        }
 
-        function mint(uint256 _mintAmount) public payable {
+        modifier onlyWhitelisted() {
+        require(whitelist[msg.sender] == true, 'You have to be in the whitelist to buy tokens');
+        _;
+        }
+
+        function addToWhitelist(address _address) public onlyOwner {
+        whitelist[_address] = true;
+    } 
+
+        function mint(uint256 _mintAmount) public payable onlyWhitelisted {
+            require(!mintingPaused, "Minting is currently paused");
+            require(_mintAmount <= maxMintAmount, '10 tokens is the maximum you can buy');
             //Only allow minting after specified time
             require(block.timestamp >= allowMintingOn);
             //Must mint at least one nft
@@ -45,7 +62,7 @@ contract NFT is ERC721Enumerable, Ownable {
             //Create a NFT
             // Loop to allow multiple minting
             for(uint256 i = 1; i <= _mintAmount; i++) {
-            // Calls safeMint from ERC721(impored in eumerable) and passes the owner 
+            // Calls safeMint from ERC721(impored in enumerable) and passes the owner 
             //and add 1 to supply as token id
             _safeMint(msg.sender, supply + i);
             }
@@ -86,6 +103,18 @@ contract NFT is ERC721Enumerable, Ownable {
 
         function setCost(uint256 _newCost) public onlyOwner {
             cost = _newCost;
+        }
+
+        function pauseMinting() public onlyOwner {
+            mintingPaused = true;
+        }
+
+        function resumeMinting() public onlyOwner {
+            mintingPaused = false;
+        }
+
+        function isMintingPaused() public view returns (bool) {
+            return mintingPaused;
         }
 
 }

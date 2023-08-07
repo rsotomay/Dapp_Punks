@@ -14,6 +14,7 @@ async function main() {
   const NFT_MINT_DATE = (Date.now() + 60000).toString().slice(0, 10);
   const IPFS_METADATA_URI =
     "ipfs://QmQ2jnDYecFhrf3asEWjyjZRX1pZSsNWG3qHzmNDvXa9qg/";
+  const MAX_MINT_AMOUNT = 10;
 
   // Deploy NFT
   const NFT = await hre.ethers.deployContract("NFT", [
@@ -23,6 +24,7 @@ async function main() {
     MAX_SUPPLY,
     NFT_MINT_DATE,
     IPFS_METADATA_URI,
+    MAX_MINT_AMOUNT,
   ]);
   await NFT.waitForDeployment();
   console.log(`NFT Deployed to: ${NFT.target}\n`);
