@@ -3,7 +3,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 
-const Mint = ({ provider, nft, cost, setIsLoading }) => {
+const Mint = ({ provider, nft, cost, setIsLoading, isWhitelisted }) => {
   const [isWaiting, setIsWaiting] = useState(false);
 
   const mintHandler = async (e) => {
@@ -32,9 +32,13 @@ const Mint = ({ provider, nft, cost, setIsLoading }) => {
         />
       ) : (
         <Form.Group>
-          <Button variant="primary" type="submit" style={{ width: "100%" }}>
-            Mint
-          </Button>
+          {isWhitelisted ? (
+            <Button variant="primary" type="submit" style={{ width: "100%" }}>
+              Mint
+            </Button>
+          ) : (
+            <p>Join our whitelist to mint.</p>
+          )}
         </Form.Group>
       )}
     </Form>

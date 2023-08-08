@@ -10,6 +10,7 @@ import preview from "../preview.png";
 import Navigation from "./Navigation";
 import Data from "./Data";
 import Mint from "./Mint";
+import Whitelist from "./Whitelist";
 import Loading from "./Loading";
 
 // ABIs: Import your contract ABIs here
@@ -30,6 +31,8 @@ function App() {
   const [totalSupply, setTotalSupply] = useState(0);
   const [cost, setCost] = useState(0);
   const [balance, setBalance] = useState(0);
+  const [isWhitelisted, setIsWhitelisted] = useState(false);
+  const [walletOfOwner, setWalletOfOwner] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -69,6 +72,16 @@ function App() {
     //Fetch account balance
     setBalance(await nft.balanceOf(account));
 
+    //Fetch whitelist from contract
+    setIsWhitelisted(await nft.whitelist(account));
+
+    //Fetch wallet of owner from contract
+    const getWallet = await nft.walletOfOwner(account);
+    if (getWallet.length > 0) {
+      const lastNFTId = getWallet[getWallet.length - 1];
+      setWalletOfOwner(lastNFTId);
+    }
+
     setIsLoading(false);
   };
 
@@ -90,10 +103,10 @@ function App() {
         <>
           <Row>
             <Col>
-              {balance > 0 ? (
+              {walletOfOwner > 0 ? (
                 <div className="text-center">
                   <img
-                    src={`https://gateway.pinata.cloud/ipfs/QmQPEMsfd1tJnqYPbnTQCjoa8vczfsV1FmqZWgRdNQ7z3g/${balance.toString()}.png`}
+                    src={`https://gateway.pinata.cloud/ipfs/QmQPEMsfd1tJnqYPbnTQCjoa8vczfsV1FmqZWgRdNQ7z3g/${walletOfOwner.toString()}.png`}
                     alt="Open Punk"
                     width="400px"
                     height="400px"
@@ -113,12 +126,18 @@ function App() {
                 cost={cost}
                 balance={balance}
               />
+              <Whitelist
+                provider={provider}
+                nft={nft}
+                setIsLoading={setIsLoading}
+              />
 
               <Mint
                 provider={provider}
                 nft={nft}
                 cost={cost}
                 setIsLoading={setIsLoading}
+                isWhitelisted={isWhitelisted}
               />
             </Col>
           </Row>
