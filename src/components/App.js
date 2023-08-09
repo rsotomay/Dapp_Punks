@@ -32,7 +32,8 @@ function App() {
   const [cost, setCost] = useState(0);
   const [balance, setBalance] = useState(0);
   const [isWhitelisted, setIsWhitelisted] = useState(false);
-  const [walletOfOwner, setWalletOfOwner] = useState(null);
+  const [lastMintedNFTId, setLastMintedNFTId] = useState(null);
+  const [listOfNFTs, setListOfNFTs] = useState(0);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -79,8 +80,10 @@ function App() {
     const getWallet = await nft.walletOfOwner(account);
     if (getWallet.length > 0) {
       const lastNFTId = getWallet[getWallet.length - 1];
-      setWalletOfOwner(lastNFTId);
+      setLastMintedNFTId(lastNFTId);
     }
+
+    setListOfNFTs(getWallet);
 
     setIsLoading(false);
   };
@@ -103,10 +106,10 @@ function App() {
         <>
           <Row>
             <Col>
-              {walletOfOwner > 0 ? (
-                <div className="text-center">
+              {lastMintedNFTId > 0 ? (
+                <div className="my-2 text-center">
                   <img
-                    src={`https://gateway.pinata.cloud/ipfs/QmQPEMsfd1tJnqYPbnTQCjoa8vczfsV1FmqZWgRdNQ7z3g/${walletOfOwner.toString()}.png`}
+                    src={`https://gateway.pinata.cloud/ipfs/QmQPEMsfd1tJnqYPbnTQCjoa8vczfsV1FmqZWgRdNQ7z3g/${lastMintedNFTId.toString()}.png`}
                     alt="Open Punk"
                     width="400px"
                     height="400px"
@@ -114,6 +117,28 @@ function App() {
                 </div>
               ) : (
                 <img src={preview} alt="" />
+              )}
+              {listOfNFTs.length > 0 ? (
+                <section style={{ backgroundColor: "red" }}>
+                  <h2 className="my-2 text-center">Your collection</h2>
+                  <div className="text-center">
+                    {listOfNFTs.map((nftId) => (
+                      <img
+                        key={nftId}
+                        style={{ margin: "6px" }}
+                        className="my-3"
+                        src={`https://gateway.pinata.cloud/ipfs/QmQPEMsfd1tJnqYPbnTQCjoa8vczfsV1FmqZWgRdNQ7z3g/${nftId.toString()}.png`}
+                        alt={`NFT ${nftId}`}
+                        width="50px"
+                        height="50px"
+                      />
+                    ))}
+                  </div>
+                </section>
+              ) : (
+                <div className="text-right">
+                  <h3>Start you collection today!</h3>
+                </div>
               )}
             </Col>
             <Col>

@@ -2,12 +2,10 @@ import { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
-import { ethers } from "ethers";
 
 const Whitelist = ({ provider, nft, setIsLoading }) => {
   const [isWaiting, setIsWaiting] = useState(false);
   const [addressToAdd, setAddressToAdd] = useState("");
-  const [status, setStatus] = useState("");
 
   const addToWhitelistHandler = async (e) => {
     e.preventDefault();
@@ -20,9 +18,8 @@ const Whitelist = ({ provider, nft, setIsLoading }) => {
         .addToWhitelist(addressToAdd);
       await transaction.wait();
     } catch {
-      window.alert("User rejected or transaction reverted");
+      window.alert("You are not in the whitelist to mint.");
     }
-    setStatus(`Address ${addressToAdd} added to whitelist`);
 
     setIsLoading(true);
   };
@@ -47,7 +44,6 @@ const Whitelist = ({ provider, nft, setIsLoading }) => {
           <Button variant="primary" type="submit" style={{ width: "100%" }}>
             Add to Whitelist
           </Button>
-          <p>status:{status}</p>
         </Form.Group>
       )}
     </Form>

@@ -2,9 +2,11 @@ import { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
+import { ethers } from "ethers";
 
 const Mint = ({ provider, nft, cost, setIsLoading, isWhitelisted }) => {
   const [isWaiting, setIsWaiting] = useState(false);
+  const [mintAmount, setMintAmount] = useState(0);
 
   const mintHandler = async (e) => {
     e.preventDefault();
@@ -12,7 +14,10 @@ const Mint = ({ provider, nft, cost, setIsLoading, isWhitelisted }) => {
 
     try {
       const signer = await provider.getSigner();
-      const transaction = await nft.connect(signer).mint(1, { value: cost });
+      const newCost = (cost.toString() * mintAmount.toString()).toString();
+      const transaction = await nft
+        .connect(signer)
+        .mint(mintAmount, { value: newCost });
       await transaction.wait();
     } catch {
       window.alert("User rejected or transaction reverted");
@@ -32,6 +37,12 @@ const Mint = ({ provider, nft, cost, setIsLoading, isWhitelisted }) => {
         />
       ) : (
         <Form.Group>
+          <Form.Control
+            type="text"
+            placeholder="Enter Amount of NFTs you wish to mint"
+            className="my-2"
+            onChange={(e) => setMintAmount(e.target.value)}
+          />
           {isWhitelisted ? (
             <Button variant="primary" type="submit" style={{ width: "100%" }}>
               Mint
