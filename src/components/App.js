@@ -137,7 +137,7 @@ function App() {
                 </section>
               ) : (
                 <div className="text-right">
-                  <h3>Start you collection today!</h3>
+                  <h3>Start your collection today!</h3>
                 </div>
               )}
             </Col>
