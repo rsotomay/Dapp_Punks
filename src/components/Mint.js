@@ -47,7 +47,7 @@ const Mint = ({ provider, nft, cost, setIsLoading, isWhitelisted }) => {
               Mint
             </Button>
           ) : (
-            <p>Join our whitelist to mint.</p>
+            <p>Join the whitelist to mint.</p>
           )}
         </Form.Group>
       )}
